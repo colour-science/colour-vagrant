@@ -1,0 +1,16 @@
+#!/usr/bin/expect
+# exp_internal 1
+set timeout 600
+spawn [lindex $argv 0]
+send "\r"
+send " "
+send " "
+send " "
+send " "
+send " "
+expect -exact "\[no\] >>>"
+send "yes\r"
+expect -exact "\[/home/vagrant/anaconda\] >>>"
+send "\r"
+expect -exact "\[no\] >>>"
+send "yes\r"
