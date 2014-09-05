@@ -6,6 +6,7 @@ colour-vagrant Fabric File
 from __future__ import unicode_literals
 
 import os
+from collections import namedtuple
 from fabric.api import cd, run, sudo, task
 from fabric.contrib.files import append, exists
 
@@ -27,6 +28,7 @@ __all__ = ['VAGRANT_DIRECTORY',
            'INTERPRETERS',
            'REQUIRED_PYTHON_PACKAGES',
            'WORKSPACE_DIRECTORY',
+           'Repository',
            'REPOSITORIES',
            'download',
            'system_update',
@@ -46,11 +48,14 @@ BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
 
 REQUIRED_DEBIAN_PACKAGES = [
     'expect',
+    'fontconfig',
     'git',
+    'libsm6',
+    'libxrender-dev',
     'wget']
 
 SOFTWARES_URLS = {
-    'anaconda': 'http://09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b00b39d1d3.r79.cf1.rackcdn.com/Anaconda-2.0.1-Linux-x86_64.sh'}
+    'anaconda': 'http://09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b00b39d1d3.r79.cf1.rackcdn.com/Anaconda-2.0.1-Linux-x86_64.sh'}  # noqa
 
 SCRIPTS = {
     'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')
@@ -69,11 +74,21 @@ REQUIRED_PYTHON_PACKAGES = [
     'flake8'
 ]
 
-WORKSPACE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'colour-science')
+WORKSPACE_DIRECTORY = '/colour-science'
+
+Repository = namedtuple('Repository', ('directory',
+                                       'url',
+                                       'add_to_python_path'))
 
 REPOSITORIES = {
-    'colour': 'https://github.com/colour-science/colour.git',
-    'colour-ipython': 'https://github.com/colour-science/colour-ipython.git'}
+    'colour': Repository(
+        os.path.join(WORKSPACE_DIRECTORY, 'colour'),
+        'https://github.com/colour-science/colour.git',
+        True),
+    'colour-ipython': Repository(
+        os.path.join(WORKSPACE_DIRECTORY, 'colour-ipython'),
+        'https://github.com/colour-science/colour-ipython.git',
+        False)}
 
 
 def download(url, directory):
@@ -164,6 +179,12 @@ def create_bash_profile_file(bash_profile_file=BASH_PROFILE_FILE):
             HOME_DIRECTORY, 'anaconda', 'bin')
         append(bash_profile_file,
                'export PATH={0}:$PATH'.format(anaconda_bin_directory))
+        python_path = ':'.join([repository.directory
+                                for name, repository in REPOSITORIES.items()
+                                if repository.add_to_python_path])
+        append(bash_profile_file,
+               'export PYTHONPATH={0}:$PYTHONPATH'.format(
+                   python_path))
 
 
 @task
@@ -220,10 +241,10 @@ def clone_repositories(repositories=REPOSITORIES,
     """
 
     with cd(workspace_directory):
-        for repository, url in repositories.items():
-            repository_directory = os.path.join(workspace_directory,
-                                                repository)
-            if not exists(repository_directory):
-                run('git clone {0}'.format(url))
-                with cd(repository_directory):
+        for name, repository in repositories.items():
+            if not exists(repository.directory):
+                run('git clone {0} {1}'.format(repository.url,
+                                               repository.directory),
+                    repository.directory)
+                with cd(repository.directory):
                     run('git remote rename origin upstream')
