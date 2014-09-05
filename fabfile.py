@@ -75,7 +75,10 @@ REQUIRED_PYTHON_PACKAGES = [
     'backports.functools_lru_cache',
     'coverage',
     'coveralls',
-    'flake8'
+    'flake8',
+    'sphinx',
+    'sphinx_bootstrap_theme',
+    'sphinxcontrib-napoleon'
 ]
 
 WORKSPACE_DIRECTORY = '/colour-science'
