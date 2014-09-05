@@ -74,9 +74,7 @@ INTERPRETERS = {
 REQUIRED_PYTHON_PACKAGES = [
     'backports.functools_lru_cache',
     'coverage',
-    'coveralls',
     'flake8',
-    'sphinx',
     'sphinx_bootstrap_theme',
     'sphinxcontrib-napoleon'
 ]
@@ -229,14 +227,14 @@ def create_environments(interpreters=INTERPRETERS,
         Required *Python* packages to install.
     """
 
-    for package in packages:
-        run('pip install {0}'.format(package))
     for interpreter, version in interpreters.items():
         anaconda_environment_directory = os.path.join(
             HOME_DIRECTORY, 'anaconda', 'envs', interpreter)
         if not exists(anaconda_environment_directory):
             run('conda create --yes -n {0} python={1} anaconda'.format(
                 interpreter, version))
+            run('source activate {0} && pip install {1}'.format(
+                interpreter, " ".join(packages)))
 
 
 @task
