@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import os
 from collections import namedtuple
 from fabric.api import cd, run, sudo, task
-from fabric.contrib.files import append, exists
+from fabric.contrib.files import append, exists, is_link
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013 - 2014 - Colour Developers'
@@ -30,6 +30,7 @@ __all__ = ['VAGRANT_DIRECTORY',
            'WORKSPACE_DIRECTORY',
            'Repository',
            'REPOSITORIES',
+           'WEBSITE_LOCAL_DIRECTORY',
            'download',
            'system_update',
            'install_required_packages',
@@ -37,7 +38,8 @@ __all__ = ['VAGRANT_DIRECTORY',
            'create_bash_profile_file',
            'source_bash_profile_file',
            'create_environments',
-           'clone_repositories']
+           'clone_repositories',
+           'configure_website']
 
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
@@ -47,9 +49,11 @@ STORAGE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'tmp')
 BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
 
 REQUIRED_DEBIAN_PACKAGES = [
+    'apache2',
     'expect',
     'fontconfig',
     'git',
+    'php5',
     'libsm6',
     'libxrender-dev',
     'wget']
@@ -88,7 +92,13 @@ REPOSITORIES = {
     'colour-ipython': Repository(
         os.path.join(WORKSPACE_DIRECTORY, 'colour-ipython'),
         'https://github.com/colour-science/colour-ipython.git',
+        False),
+    'colour-website': Repository(
+        os.path.join(WORKSPACE_DIRECTORY, 'colour-website'),
+        'https://github.com/colour-science/colour-website.git',
         False)}
+
+WEBSITE_LOCAL_DIRECTORY = os.path.join(WORKSPACE_DIRECTORY, 'colour-website')
 
 
 def download(url, directory):
@@ -248,3 +258,25 @@ def clone_repositories(repositories=REPOSITORIES,
                     repository.directory)
                 with cd(repository.directory):
                     run('git remote rename origin upstream')
+
+
+@task
+def configure_website(website_local_directory=WEBSITE_LOCAL_DIRECTORY):
+    """
+    Task for *colour-science.local* website configuration.
+
+    Parameters
+    ----------
+    website_local_directory : unicode
+        Website local directory.
+    """
+
+    provider_directory = '/var/www'
+    if not is_link(provider_directory):
+        sudo(('sed -i "s/AllowOverride None/AllowOverride All/g" '
+              '/etc/apache2/apache2.conf'))
+        sudo('rm -rf {0}'.format(provider_directory))
+        sudo('ln -fs {0} {1}'.format(
+            website_local_directory, provider_directory))
+        sudo('a2enmod rewrite')
+        sudo('service apache2 restart')
