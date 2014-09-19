@@ -53,6 +53,7 @@ REQUIRED_DEBIAN_PACKAGES = [
     'expect',
     'fontconfig',
     'git',
+    'pandoc',
     'php5',
     'libsm6',
     'libxrender-dev',
