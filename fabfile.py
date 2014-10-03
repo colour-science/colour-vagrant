@@ -50,6 +50,7 @@ BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
 
 REQUIRED_DEBIAN_PACKAGES = [
     'apache2',
+    'dvipng',
     'expect',
     'fontconfig',
     'git',
@@ -57,6 +58,8 @@ REQUIRED_DEBIAN_PACKAGES = [
     'php5',
     'libsm6',
     'libxrender-dev',
+    'texlive',
+    'texlive-latex-extra',
     'wget']
 
 SOFTWARES_URLS = {
