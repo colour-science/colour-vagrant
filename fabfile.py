@@ -52,11 +52,15 @@ REQUIRED_DEBIAN_PACKAGES = [
     'apache2',
     'expect',
     'fontconfig',
+    'gfortran',
     'git',
     'pandoc',
     'php5',
+    'liblapack-dev',
+    'libopenblas-dev',
     'libsm6',
     'libxrender-dev',
+    'python-virtualenv',
     'wget']
 
 SOFTWARES_URLS = {
@@ -73,7 +77,6 @@ INTERPRETERS = {
 }
 
 REQUIRED_PYTHON_PACKAGES = [
-    'backports.functools_lru_cache',
     'coverage',
     'flake8',
     'sphinx_bootstrap_theme',
@@ -277,6 +280,8 @@ def configure_website(website_local_directory=WEBSITE_LOCAL_DIRECTORY):
     if not is_link(provider_directory):
         sudo(('sed -i "s/AllowOverride None/AllowOverride All/g" '
               '/etc/apache2/apache2.conf'))
+        sudo(('sed -i "s|/usr/lib/cgi-bin|/var/www/cgi-bin|g" '
+              '/etc/apache2/sites-enabled/000-default'))
         sudo('rm -rf {0}'.format(provider_directory))
         sudo('ln -fs {0} {1}'.format(
             website_local_directory, provider_directory))
