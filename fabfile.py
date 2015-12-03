@@ -4,7 +4,6 @@ colour-vagrant Fabric File
 """
 
 from __future__ import unicode_literals
-
 import os
 from collections import namedtuple
 from fabric.api import cd, run, sudo, task
@@ -52,36 +51,28 @@ REQUIRED_DEBIAN_PACKAGES = [
     'apache2',
     'expect',
     'fontconfig',
-    'gfortran',
     'git',
     'pandoc',
     'php5',
-    'liblapack-dev',
-    'libopenblas-dev',
     'libsm6',
     'libxrender-dev',
-    'python-virtualenv',
     'wget']
 
 SOFTWARES_URLS = {
-    'anaconda': 'http://09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b00b39d1d3.r79.cf1.rackcdn.com/Anaconda-2.0.1-Linux-x86_64.sh'}  # noqa
+    'anaconda': 'https://3230d63b5fc54e62148e-c95ac804525aac4b6dba79b00b39d1d3.ssl.cf1.rackcdn.com/Anaconda3-2.4.0-Linux-x86_64.sh'}  # noqa
 
 SCRIPTS = {
-    'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')
-}
+    'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')}
 
 INTERPRETERS = {
-    'python2.6': '2.6',
     'python2.7': '2.7',
-    'python3.4': '3'
-}
+    'python3.5': '3'}
 
 REQUIRED_PYTHON_PACKAGES = [
     'coverage',
     'flake8',
-    'sphinx_bootstrap_theme',
-    'sphinxcontrib-napoleon'
-]
+    'nikola',
+    'nikola[extras]']
 
 WORKSPACE_DIRECTORY = '/colour-science'
 
@@ -98,12 +89,14 @@ REPOSITORIES = {
         os.path.join(WORKSPACE_DIRECTORY, 'colour-ipython'),
         'https://github.com/colour-science/colour-ipython.git',
         False),
-    'colour-website': Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour-website'),
-        'https://github.com/colour-science/colour-website.git',
+    'colour-science.org': Repository(
+        os.path.join(WORKSPACE_DIRECTORY, 'colour-science.org'),
+        'https://github.com/colour-science/colour-science.org.git',
         False)}
 
-WEBSITE_LOCAL_DIRECTORY = os.path.join(WORKSPACE_DIRECTORY, 'colour-website')
+WEBSITE_LOCAL_DIRECTORY = os.path.join(WORKSPACE_DIRECTORY,
+                                       'colour-science.org',
+                                       'output')
 
 
 def download(url, directory):
@@ -191,7 +184,7 @@ def create_bash_profile_file(bash_profile_file=BASH_PROFILE_FILE):
         append(bash_profile_file,
                'source {0}'.format(bashrc_file))
         anaconda_bin_directory = os.path.join(
-            HOME_DIRECTORY, 'anaconda', 'bin')
+            HOME_DIRECTORY, 'anaconda3', 'bin')
         append(bash_profile_file,
                'export PATH={0}:$PATH'.format(anaconda_bin_directory))
         python_path = ':'.join([repository.directory
