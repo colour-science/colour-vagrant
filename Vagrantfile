@@ -124,13 +124,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :fabric do |fab|
     fab.tasks = ["system_update",
-                  "install_required_packages",
-                  "install_anaconda",
-                  "create_bash_profile_file",
-                  "source_bash_profile_file",
-                  "create_environments",
-                  "clone_repositories",
-                  "configure_website",
-                  "install_OpenImageIO"]
+                 "install_required_packages",
+                 "install_anaconda",
+                 "create_bash_profile_file",
+                 "source_bash_profile_file",
+                 "create_environments",
+                 "clone_repositories",
+                 "configure_website",
+                 "install_OpenImageIO"]
   end
 end
