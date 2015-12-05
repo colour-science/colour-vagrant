@@ -71,6 +71,7 @@ INTERPRETERS = {
 REQUIRED_PYTHON_PACKAGES = [
     'coverage',
     'flake8',
+    'mock',
     'nikola',
     'nikola[extras]']
 
