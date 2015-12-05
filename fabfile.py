@@ -4,8 +4,10 @@ colour-vagrant Fabric File
 """
 
 from __future__ import unicode_literals
+
 import os
 from collections import namedtuple
+
 from fabric.api import cd, run, sudo, task
 from fabric.contrib.files import append, exists, is_link
 
@@ -38,7 +40,8 @@ __all__ = ['VAGRANT_DIRECTORY',
            'source_bash_profile_file',
            'create_environments',
            'clone_repositories',
-           'configure_website']
+           'configure_website',
+           'install_OpenImageIO']
 
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
@@ -48,18 +51,33 @@ STORAGE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'tmp')
 BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
 
 REQUIRED_DEBIAN_PACKAGES = [
-    'apache2',
+    'apache2'
+    'cmake',
     'expect',
     'fontconfig',
+    'g++',
+    'gfortran',
     'git',
     'pandoc',
     'php5',
+    'python-dev',
+    'libboost-all-dev',
+    'libjpeg-dev',
+    'liblapack-dev',
+    'libopenblas-dev',
+    'libopenexr-dev',
+    'libpng-dev',
     'libsm6',
+    'libtiff4-dev',
     'libxrender-dev',
+    'make',
+    'unzip',
     'wget']
 
 SOFTWARES_URLS = {
-    'anaconda': 'https://3230d63b5fc54e62148e-c95ac804525aac4b6dba79b00b39d1d3.ssl.cf1.rackcdn.com/Anaconda3-2.4.0-Linux-x86_64.sh'}  # noqa
+    'anaconda': 'https://3230d63b5fc54e62148e-c95ac804525aac4b6dba79b00b39d1d3.ssl.cf1.rackcdn.com/Anaconda3-2.4.0-Linux-x86_64.sh',
+# noqa
+    'OpenImageIO': 'https://github.com/OpenImageIO/oiio/archive/Release-1.5.21.zip'}  # noqa
 
 SCRIPTS = {
     'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')}
@@ -185,15 +203,14 @@ def create_bash_profile_file(bash_profile_file=BASH_PROFILE_FILE):
         append(bash_profile_file,
                'source {0}'.format(bashrc_file))
         anaconda_bin_directory = os.path.join(
-            HOME_DIRECTORY, 'anaconda3', 'bin')
+            HOME_DIRECTORY, 'anaconda3/envs/python2.7/bin')
         append(bash_profile_file,
                'export PATH={0}:$PATH'.format(anaconda_bin_directory))
         python_path = ':'.join([repository.directory
                                 for name, repository in REPOSITORIES.items()
                                 if repository.add_to_python_path])
         append(bash_profile_file,
-               'export PYTHONPATH={0}:$PYTHONPATH'.format(
-                   python_path))
+               'export PYTHONPATH={0}:$PYTHONPATH'.format(python_path))
 
 
 @task
@@ -227,7 +244,7 @@ def create_environments(interpreters=INTERPRETERS,
 
     for interpreter, version in interpreters.items():
         anaconda_environment_directory = os.path.join(
-            HOME_DIRECTORY, 'anaconda', 'envs', interpreter)
+            HOME_DIRECTORY, 'anaconda/envs', interpreter)
         if not exists(anaconda_environment_directory):
             run('conda create --yes -n {0} python={1} anaconda'.format(
                 interpreter, version))
@@ -281,3 +298,35 @@ def configure_website(website_local_directory=WEBSITE_LOCAL_DIRECTORY):
             website_local_directory, provider_directory))
         sudo('a2enmod rewrite')
         sudo('service apache2 restart')
+
+
+@task
+def install_OpenImageIO(url=SOFTWARES_URLS.get('OpenImageIO'),
+                        directory=STORAGE_DIRECTORY, ):
+    name = os.path.basename(url)
+    OpenImageIO_installer = os.path.join(directory, name)
+    OpenImageIO_directory = os.path.join(
+        directory, 'oiio-{0}'.format(os.path.splitext(name)[0]))
+
+    if not exists(OpenImageIO_directory):
+        if not exists(OpenImageIO_installer):
+            download(url, directory)
+
+        with cd(STORAGE_DIRECTORY):
+            run('unzip {0}'.format(OpenImageIO_installer))
+
+        with cd(OpenImageIO_directory):
+            run('make')
+
+        with cd(os.path.join(OpenImageIO_directory, 'dist', 'linux64')):
+            sudo('cp bin/* /usr/local/bin/')
+            sudo('cp lib/* /usr/local/lib/')
+
+        anaconda_site_package_directory = os.path.join(
+            HOME_DIRECTORY,
+            'anaconda3/envs/python2.7/lib/python2.7/site-packages')
+        OpenImageIO_python_library = os.path.join(
+            OpenImageIO_directory, 'dist/linux64/python/OpenImageIO.so')
+
+        with cd(anaconda_site_package_directory):
+            run('cp {0} .'.format(OpenImageIO_python_library))
