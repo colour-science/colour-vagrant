@@ -41,7 +41,8 @@ __all__ = ['VAGRANT_DIRECTORY',
            'create_environments',
            'clone_repositories',
            'configure_website',
-           'install_OpenImageIO']
+           'install_OpenImageIO',
+           'install_Nodejs_toolchain']
 
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
@@ -51,7 +52,8 @@ STORAGE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'tmp')
 BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
 
 REQUIRED_DEBIAN_PACKAGES = [
-    'apache2'
+    'apache2',
+    'build-essential',
     'cmake',
     'expect',
     'fontconfig',
@@ -76,8 +78,8 @@ REQUIRED_DEBIAN_PACKAGES = [
 
 SOFTWARES_URLS = {
     'anaconda': 'https://3230d63b5fc54e62148e-c95ac804525aac4b6dba79b00b39d1d3.ssl.cf1.rackcdn.com/Anaconda3-2.4.0-Linux-x86_64.sh',
-# noqa
-    'OpenImageIO': 'https://github.com/OpenImageIO/oiio/archive/Release-1.5.21.zip'}  # noqa
+    'OpenImageIO': 'https://github.com/OpenImageIO/oiio/archive/Release-1.5.21.zip',
+    'nodejs': 'http://nodejs.org/dist/v0.12.9/node-v0.12.9.tar.gz'}
 
 SCRIPTS = {
     'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')}
@@ -174,7 +176,7 @@ def install_anaconda(url=SOFTWARES_URLS.get('anaconda'),
         *Anaconda* *expect* installation script.
     """
 
-    anaconda_installation_directory = os.path.join(HOME_DIRECTORY, 'anaconda')
+    anaconda_installation_directory = os.path.join(HOME_DIRECTORY, 'anaconda3')
     if not exists(anaconda_installation_directory):
         name = os.path.basename(url)
         anaconda_installer = os.path.join(directory, name)
@@ -302,7 +304,18 @@ def configure_website(website_local_directory=WEBSITE_LOCAL_DIRECTORY):
 
 @task
 def install_OpenImageIO(url=SOFTWARES_URLS.get('OpenImageIO'),
-                        directory=STORAGE_DIRECTORY, ):
+                        directory=STORAGE_DIRECTORY):
+    """
+    Task for *OpenImageIO* installation.
+
+    Parameters
+    ----------
+    url : unicode
+        *OpenImageIO* installer url.
+    directory : unicode
+        Directory to write the download to.
+    """
+
     name = os.path.basename(url)
     OpenImageIO_installer = os.path.join(directory, name)
     OpenImageIO_directory = os.path.join(
@@ -330,3 +343,37 @@ def install_OpenImageIO(url=SOFTWARES_URLS.get('OpenImageIO'),
 
         with cd(anaconda_site_package_directory):
             run('cp {0} .'.format(OpenImageIO_python_library))
+
+
+@task
+def install_Nodejs_toolchain(url=SOFTWARES_URLS.get('nodejs'),
+                             directory=STORAGE_DIRECTORY):
+    """
+    Task for *Nodejs* toolchain installation.
+
+    Parameters
+    ----------
+    url : unicode
+        *Nodejs* installer url.
+    directory : unicode
+        Directory to write the download to.
+    """
+
+    name = os.path.basename(url)
+    nodejs_installer = os.path.join(directory, name)
+    nodejs_directory = os.path.join(
+        directory, os.path.splitext(os.path.splitext(name)[0])[0])
+
+    if not exists(nodejs_directory):
+        if not exists(nodejs_installer):
+            download(url, directory)
+
+        with cd(STORAGE_DIRECTORY):
+            run('tar -xvf {0}'.format(nodejs_installer))
+
+        with cd(nodejs_directory):
+            run('./configure')
+            run('make')
+            sudo('make install')
+
+        sudo('npm install -g grunt-cli')

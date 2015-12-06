@@ -131,6 +131,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                  "create_environments",
                  "clone_repositories",
                  "configure_website",
-                 "install_OpenImageIO"]
+                 "install_OpenImageIO",
+                 "install_Nodejs_toolchain"]
   end
 end
