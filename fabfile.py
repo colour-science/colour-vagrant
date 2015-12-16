@@ -64,6 +64,7 @@ REQUIRED_DEBIAN_PACKAGES = [
     'php5',
     'python-dev',
     'libboost-all-dev',
+    'libilmbase-dev',
     'libjpeg-dev',
     'liblapack-dev',
     'libopenblas-dev',
