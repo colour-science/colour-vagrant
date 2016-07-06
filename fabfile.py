@@ -107,9 +107,9 @@ REPOSITORIES = {
         os.path.join(WORKSPACE_DIRECTORY, 'colour'),
         'https://github.com/colour-science/colour.git',
         True),
-    'colour-ipython': Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour-ipython'),
-        'https://github.com/colour-science/colour-ipython.git',
+    'colour-notebooks': Repository(
+        os.path.join(WORKSPACE_DIRECTORY, 'colour-notebooks'),
+        'https://github.com/colour-science/colour-notebooks.git',
         False),
     'colour-science.org': Repository(
         os.path.join(WORKSPACE_DIRECTORY, 'colour-science.org'),
