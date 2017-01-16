@@ -46,10 +46,10 @@ __all__ = ['VAGRANT_DIRECTORY',
 
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
-SCRIPTS_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'scripts')
-STORAGE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'tmp')
+SCRIPTS_DIRECTORY = VAGRANT_DIRECTORY + '/scripts'
+STORAGE_DIRECTORY = VAGRANT_DIRECTORY + '/tmp'
 
-BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
+BASH_PROFILE_FILE = HOME_DIRECTORY + '/.bash_profile'
 
 REQUIRED_DEBIAN_PACKAGES = [
     'apache2',
@@ -83,7 +83,7 @@ SOFTWARES_URLS = {
     'nodejs': 'http://nodejs.org/dist/v0.12.9/node-v0.12.9.tar.gz'}
 
 SCRIPTS = {
-    'anaconda_expect': os.path.join(SCRIPTS_DIRECTORY, 'anaconda_expect.exp')}
+    'anaconda_expect': SCRIPTS_DIRECTORY + '/anaconda_expect.exp'}
 
 INTERPRETERS = {
     'python2.7': '2.7',
@@ -104,7 +104,7 @@ Repository = namedtuple('Repository', ('directory',
 
 REPOSITORIES = {
     'colour': Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour'),
+        WORKSPACE_DIRECTORY + '/colour',
         'https://github.com/colour-science/colour.git',
         True),
     'colour-notebooks': Repository(
@@ -112,13 +112,11 @@ REPOSITORIES = {
         'https://github.com/colour-science/colour-notebooks.git',
         False),
     'colour-science.org': Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour-science.org'),
+        WORKSPACE_DIRECTORY + '/colour-science.org',
         'https://github.com/colour-science/colour-science.org.git',
         False)}
 
-WEBSITE_LOCAL_DIRECTORY = os.path.join(WORKSPACE_DIRECTORY,
-                                       'colour-science.org',
-                                       'output')
+WEBSITE_LOCAL_DIRECTORY = WORKSPACE_DIRECTORY + '/colour-science.org/output'
 
 
 def download(url, directory):
@@ -177,10 +175,10 @@ def install_anaconda(url=SOFTWARES_URLS.get('anaconda'),
         *Anaconda* *expect* installation script.
     """
 
-    anaconda_installation_directory = os.path.join(HOME_DIRECTORY, 'anaconda3')
+    anaconda_installation_directory = HOME_DIRECTORY + '/anaconda3'
     if not exists(anaconda_installation_directory):
         name = os.path.basename(url)
-        anaconda_installer = os.path.join(directory, name)
+        anaconda_installer = directory + '/' + name
         if not exists(anaconda_installer):
             download(url, directory)
 
@@ -202,11 +200,11 @@ def create_bash_profile_file(bash_profile_file=BASH_PROFILE_FILE):
     """
 
     if not exists(bash_profile_file):
-        bashrc_file = os.path.join(HOME_DIRECTORY, '.bashrc')
+        bashrc_file = HOME_DIRECTORY + '/.bashrc'
         append(bash_profile_file,
                'source {0}'.format(bashrc_file))
-        anaconda_bin_directory = os.path.join(
-            HOME_DIRECTORY, 'anaconda3/envs/python2.7/bin')
+        #anaconda_bin_directory = HOME_DIRECTORY + '/anaconda3/envs/python2.7/bin'
+        anaconda_bin_directory = HOME_DIRECTORY + '/bin'
         append(bash_profile_file,
                'export PATH={0}:$PATH'.format(anaconda_bin_directory))
         python_path = ':'.join([repository.directory
@@ -246,10 +244,10 @@ def create_environments(interpreters=INTERPRETERS,
     """
 
     for interpreter, version in interpreters.items():
-        anaconda_environment_directory = os.path.join(
-            HOME_DIRECTORY, 'anaconda/envs', interpreter)
+        anaconda_environment_directory = '/'.join([
+            HOME_DIRECTORY, 'anaconda3/envs', interpreter])
         if not exists(anaconda_environment_directory):
-            run('conda create --yes -n {0} python={1} anaconda'.format(
+            run(HOME_DIRECTORY + '/anaconda3/bin/conda create --yes -n {0} python={1} anaconda'.format(
                 interpreter, version))
             run('source activate {0} && pip install {1}'.format(
                 interpreter, " ".join(packages)))
@@ -318,9 +316,9 @@ def install_OpenImageIO(url=SOFTWARES_URLS.get('OpenImageIO'),
     """
 
     name = os.path.basename(url)
-    OpenImageIO_installer = os.path.join(directory, name)
-    OpenImageIO_directory = os.path.join(
-        directory, 'oiio-{0}'.format(os.path.splitext(name)[0]))
+    OpenImageIO_installer = '/'.join([directory, name])
+    OpenImageIO_directory = '/'.join([
+        directory, 'oiio-{0}'.format(os.path.splitext(name)[0])])
 
     if not exists(OpenImageIO_directory):
         if not exists(OpenImageIO_installer):
@@ -332,15 +330,12 @@ def install_OpenImageIO(url=SOFTWARES_URLS.get('OpenImageIO'),
         with cd(OpenImageIO_directory):
             run('make')
 
-        with cd(os.path.join(OpenImageIO_directory, 'dist', 'linux64')):
+        with cd('/'.join([OpenImageIO_directory, 'dist', 'linux64'])):
             sudo('cp bin/* /usr/local/bin/')
             sudo('cp lib/* /usr/local/lib/')
 
-        anaconda_site_package_directory = os.path.join(
-            HOME_DIRECTORY,
-            'anaconda3/envs/python2.7/lib/python2.7/site-packages')
-        OpenImageIO_python_library = os.path.join(
-            OpenImageIO_directory, 'dist/linux64/python/OpenImageIO.so')
+        anaconda_site_package_directory = HOME_DIRECTORY + '/anaconda3/envs/python2.7/lib/python2.7/site-packages'
+        OpenImageIO_python_library = OpenImageIO_directory + '/dist/linux64/python/OpenImageIO.so'
 
         with cd(anaconda_site_package_directory):
             run('cp {0} .'.format(OpenImageIO_python_library))
@@ -361,9 +356,9 @@ def install_Nodejs_toolchain(url=SOFTWARES_URLS.get('nodejs'),
     """
 
     name = os.path.basename(url)
-    nodejs_installer = os.path.join(directory, name)
-    nodejs_directory = os.path.join(
-        directory, os.path.splitext(os.path.splitext(name)[0])[0])
+    nodejs_installer = '/'.join([directory, name])
+    nodejs_directory = '/'.join([
+        directory, os.path.splitext(os.path.splitext(name)[0])[0]])
 
     if not exists(nodejs_directory):
         if not exists(nodejs_installer):
