@@ -313,11 +313,11 @@ def configure_website(website_local_directory=WEBSITE_LOCAL_DIRECTORY):
         Website local directory.
     """
 
-    provider_directory = '/var/www'
+    provider_directory = '/var/www/html'
     if not is_link(provider_directory):
         sudo(('sed -i "s/AllowOverride None/AllowOverride All/g" '
               '/etc/apache2/apache2.conf'))
-        sudo(('sed -i "s|/usr/lib/cgi-bin|/var/www/cgi-bin|g" '
+        sudo(('sed -i "s|/usr/lib/cgi-bin|/var/www/html/cgi-bin|g" '
               '/etc/apache2/sites-enabled/000-default.conf'))
         sudo('rm -rf {0}'.format(provider_directory))
         sudo('ln -fs {0} {1}'.format(website_local_directory,
