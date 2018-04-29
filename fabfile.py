@@ -76,6 +76,7 @@ REQUIRED_DEBIAN_PACKAGES += [
     'libtiff5-dev',
     'libwebp-dev',
     'qtbase5-dev',
+    'xauth'
 ]
 
 SOFTWARES_URLS = {
