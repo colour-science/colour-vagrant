@@ -103,6 +103,7 @@ REQUIRED_CONDA_PYTHON_PACKAGES = [
     'six',
     'sphinx',
     'twine',
+    'ws4py',
     'yapf',
 ]
 
@@ -113,6 +114,7 @@ REQUIRED_PIP_PYTHON_PACKAGES = [
     'restructuredtext_lint',
     'sphinxcontrib-bibtex',
     'sphinx_rtd_theme',
+    'watchdog',
 ]
 
 WORKSPACE_DIRECTORY = '/colour-science'
