@@ -374,7 +374,7 @@ def install_OpenImageIO(
         if not exists(OpenImageIO_installer):
             download(url, directory)
 
-        with cd(STORAGE_DIRECTORY):
+        with cd(directory):
             run('unzip {0}'.format(OpenImageIO_installer))
 
         with cd(OpenImageIO_directory):
