@@ -5,7 +5,7 @@ colour-vagrant Fabric File
 
 from __future__ import unicode_literals
 
-import os
+import posixpath
 from collections import namedtuple
 
 from fabric.api import cd, run, sudo, task
@@ -32,10 +32,10 @@ __all__ = [
 
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
-SCRIPTS_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'scripts')
-STORAGE_DIRECTORY = os.path.join(VAGRANT_DIRECTORY, 'tmp')
+SCRIPTS_DIRECTORY = posixpath.join(VAGRANT_DIRECTORY, 'scripts')
+STORAGE_DIRECTORY = posixpath.join(VAGRANT_DIRECTORY, 'tmp')
 
-BASH_PROFILE_FILE = os.path.join(HOME_DIRECTORY, '.bash_profile')
+BASH_PROFILE_FILE = posixpath.join(HOME_DIRECTORY, '.bash_profile')
 
 # Base
 REQUIRED_DEBIAN_PACKAGES = [
@@ -90,7 +90,7 @@ SCRIPTS = {}
 
 INTERPRETERS = {'python2.7': '2.7', 'python3.5': '3.5'}
 
-CONDA_DIRECTORY = os.path.join(HOME_DIRECTORY, 'miniconda')
+CONDA_DIRECTORY = posixpath.join(HOME_DIRECTORY, 'miniconda')
 
 REQUIRED_CONDA_PYTHON_PACKAGES = [
     'coverage',
@@ -126,19 +126,19 @@ Repository = namedtuple('Repository',
 REPOSITORIES = {
     'colour':
     Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour'),
+        posixpath.join(WORKSPACE_DIRECTORY, 'colour'),
         'https://github.com/colour-science/colour.git', True),
     'colour-notebooks':
     Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour-notebooks'),
+        posixpath.join(WORKSPACE_DIRECTORY, 'colour-notebooks'),
         'https://github.com/colour-science/colour-notebooks.git', False),
     'colour-science.org':
     Repository(
-        os.path.join(WORKSPACE_DIRECTORY, 'colour-science.org'),
+        posixpath.join(WORKSPACE_DIRECTORY, 'colour-science.org'),
         'https://github.com/colour-science/colour-science.org.git', False)
 }
 
-WEBSITE_LOCAL_DIRECTORY = os.path.join(WORKSPACE_DIRECTORY,
+WEBSITE_LOCAL_DIRECTORY = posixpath.join(WORKSPACE_DIRECTORY,
                                        'colour-science.org', 'output')
 
 
@@ -201,8 +201,8 @@ def install_conda(
     """
 
     if not exists(CONDA_DIRECTORY):
-        name = os.path.basename(url)
-        conda_installer = os.path.join(directory, name)
+        name = posixpath.basename(url)
+        conda_installer = posixpath.join(directory, name)
         if not exists(conda_installer):
             download(url, directory)
 
@@ -222,10 +222,10 @@ def create_bash_profile_file(bash_profile_file=BASH_PROFILE_FILE):
     """
 
     if not exists(bash_profile_file):
-        bashrc_file = os.path.join(HOME_DIRECTORY, '.bashrc')
+        bashrc_file = posixpath.join(HOME_DIRECTORY, '.bashrc')
         append(bash_profile_file, 'source {0}'.format(bashrc_file))
 
-        conda_bin_directory = os.path.join(CONDA_DIRECTORY, 'bin')
+        conda_bin_directory = posixpath.join(CONDA_DIRECTORY, 'bin')
         append(bash_profile_file,
                'export PATH={0}:$PATH'.format(conda_bin_directory))
         python_path = ':'.join([
@@ -269,11 +269,11 @@ def create_environments(interpreters=INTERPRETERS,
     """
 
     for interpreter, version in interpreters.items():
-        conda_environment_directory = os.path.join(CONDA_DIRECTORY, 'envs',
+        conda_environment_directory = posixpath.join(CONDA_DIRECTORY, 'envs',
                                                    interpreter)
         if not exists(conda_environment_directory):
             run('{0} create --yes -n {1} python={2} anaconda'.format(
-                os.path.join(HOME_DIRECTORY, 'miniconda', 'bin', 'conda'),
+                posixpath.join(HOME_DIRECTORY, 'miniconda', 'bin', 'conda'),
                 interpreter, version))
             run('source activate {0} && conda install --yes {1}'.format(
                 interpreter, " ".join(conda_packages)))
@@ -343,10 +343,10 @@ def install_OpenImageIO(
         Directory to write the download to.
     """
 
-    name = os.path.basename(url)
-    OpenImageIO_installer = os.path.join(directory, name)
-    OpenImageIO_directory = os.path.join(directory, 'oiio-{0}'.format(
-        os.path.splitext(name)[0]))
+    name = posixpath.basename(url)
+    OpenImageIO_installer = posixpath.join(directory, name)
+    OpenImageIO_directory = posixpath.join(directory, 'oiio-{0}'.format(
+        posixpath.splitext(name)[0]))
 
     if not exists(OpenImageIO_directory):
 
@@ -380,14 +380,14 @@ def install_OpenImageIO(
         with cd(OpenImageIO_directory):
             run('make PYTHON_VERSION=3.5')
 
-        with cd(os.path.join(OpenImageIO_directory, 'dist', 'linux64')):
+        with cd(posixpath.join(OpenImageIO_directory, 'dist', 'linux64')):
             sudo('cp bin/* /usr/local/bin/')
             sudo('cp lib/*.so* /usr/local/lib/')
 
-        conda_site_package_directory = os.path.join(
+        conda_site_package_directory = posixpath.join(
             CONDA_DIRECTORY, 'envs', 'python3.5', 'lib', 'python3.5',
             'site-packages')
-        OpenImageIO_python_library = os.path.join(
+        OpenImageIO_python_library = posixpath.join(
             OpenImageIO_directory, 'dist', 'linux64', 'lib', 'python3.5',
             'site-packages', 'OpenImageIO.so')
 
