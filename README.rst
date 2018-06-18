@@ -6,7 +6,7 @@ Introduction
 
 A `Vagrant <https://www.vagrantup.com/>`_ environment for `Colour <http://github.com/colour-science/colour>`_ development.
 
-Please refer to the dedicated blog post for more details about its deployment: `PyCharm, Vagrant, Fabric & Anaconda <http://colour-science.org/posts/pycharm-vagrant-fabric-anaconda/>`_
+Please refer to the dedicated blog post for more details about its deployment: `PyCharm, Vagrant, Fabric & Anaconda <https://www.colour-science.org/posts/pycharm-vagrant-fabric-anaconda/>`_
 
 About
 -----
