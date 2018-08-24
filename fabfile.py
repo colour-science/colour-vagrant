@@ -33,7 +33,7 @@ __all__ = [
 VAGRANT_DIRECTORY = '/vagrant'
 HOME_DIRECTORY = '/home/vagrant'
 SCRIPTS_DIRECTORY = posixpath.join(VAGRANT_DIRECTORY, 'scripts')
-STORAGE_DIRECTORY = posixpath.join(VAGRANT_DIRECTORY, 'tmp')
+STORAGE_DIRECTORY = '/tmp'
 
 BASH_PROFILE_FILE = posixpath.join(HOME_DIRECTORY, '.bash_profile')
 
@@ -374,7 +374,7 @@ def install_OpenImageIO(
         if not exists(OpenImageIO_installer):
             download(url, directory)
 
-        with cd(STORAGE_DIRECTORY):
+        with cd(directory):
             run('unzip {0}'.format(OpenImageIO_installer))
 
         with cd(OpenImageIO_directory):
