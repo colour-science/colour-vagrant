@@ -1,0 +1,31 @@
+---
+- hosts: all
+  vars:
+    COLOUR_SCIENCE__ROOT_DIRECTORY: "/colour-science"
+    COLOUR_SCIENCE__PYTHON_VERSION: "3.6"
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.poetry/bin:{{ ansible_env.PATH }}"
+  tasks:
+    - import_tasks: install_apt_dependencies.yml
+    - import_tasks: install_poetry.yml
+    - import_tasks: install_openimageio.yml
+    - import_tasks: install_repository.yml
+      vars:
+        repository: colour
+        extras: optional plotting
+    - import_tasks: install_repository.yml
+      vars:
+        repository: colour-checker-detection
+        extras: development
+    - import_tasks: install_repository.yml
+      vars:
+        repository: colour-datasets
+        extras: development
+    - import_tasks: install_repository.yml
+      vars:
+        repository: colour-demosaicing
+        extras: plotting
+    - import_tasks: install_repository.yml
+      vars:
+        repository: colour-hdri
+        extras: optional plotting

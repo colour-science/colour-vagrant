@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "bento/ubuntu-16.04"
+  config.vm.box = "bento/ubuntu-18.04"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -126,17 +126,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #   chef.validation_client_name = "ORGNAME-validator"
 
-  config.vm.provision :fabric do |fab|
-    fab.tasks = [
-      "system_update",
-      "install_required_packages",
-      "install_conda",
-      "create_bash_profile_file",
-      "source_bash_profile_file",
-      "create_environments",
-      "clone_repositories",
-      "configure_website",
-      "install_OpenImageIO"
-    ]
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "provision/provision.yml"
+    ansible.verbose = "-vvv"
   end
 end

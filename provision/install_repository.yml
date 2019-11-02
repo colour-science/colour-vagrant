@@ -1,0 +1,30 @@
+- name: Add "{{ repository }}" Alias Function
+  blockinfile:
+    state: present
+    insertafter: EOF
+    dest: "{{ ansible_env.HOME }}/.profile"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"{{ repository }}\" Alias Function"
+    content: |
+      alias {{ repository }}="cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }} && poem"
+- name: Check if "{{ repository }}" is Cloned
+  stat:
+    path: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
+  register: repository_local_directory
+- name: Clone "{{ repository }}"
+  git:
+    repo: "https://github.com/colour-science/{{ repository }}.git"
+    dest: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
+  when: not repository_local_directory.stat.exists
+- name: Install Repository Dependencies
+  shell: |
+    poetry env use {{ COLOUR_SCIENCE__PYTHON_VERSION }}
+    poetry install --extras "{{ extras }}"
+    source $(poetry env info -p)/bin/activate
+    $(poetry env info -p)/bin/python -c "import imageio;imageio.plugins.freeimage.download()"
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
+- name: Install "OpenImageIO" Library
+  shell: |
+    cp /tmp/OpenImageIO-Release-2.0.10/linux64/lib/python3.6/site-packages/OpenImageIO.so $(poetry env info -p)/lib/python3.6/site-packages/
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
