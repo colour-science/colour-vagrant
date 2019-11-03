@@ -1,0 +1,20 @@
+- name: Check if "OpenImageIO" Library is Installed
+  stat:
+    path: /usr/bin/libOpenImageIO.so
+  register: openimageio_library
+
+- name: Download "OpenImageIO"
+  get_url:
+    url: https://github.com/colour-science/artifacts/suites/233020849/artifacts/44967
+    dest: /tmp/OpenImageIO-Release-2.0.10.zip
+  when: not openimageio_library.stat.exists
+
+- name: Install "OpenImageIO"
+  shell: |
+    unzip OpenImageIO-Release-2.0.10.zip
+    cp OpenImageIO-Release-2.0.10/linux64/bin/* /usr/bin/
+    cp -r OpenImageIO-Release-2.0.10/linux64/lib/* /usr/lib/
+  args:
+    chdir: /tmp
+  become: yes
+  when: not openimageio_library.stat.exists

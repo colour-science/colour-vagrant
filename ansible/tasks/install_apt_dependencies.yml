@@ -1,0 +1,19 @@
+- name: Update APT Packages
+  apt:
+    upgrade: dist
+  become: yes
+
+- name: Install APT Dependencies
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - libboost-all-dev
+    - libilmbase-dev
+    - libopenexr-dev
+    - libpng-dev
+    - libtiff5-dev
+    - python-setuptools
+    - python3-venv
+    - unzip
+  become: yes

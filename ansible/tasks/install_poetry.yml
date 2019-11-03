@@ -1,0 +1,38 @@
+- name: Check if "Poetry" is Installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.poetry/bin/poetry"
+  register: poetry_executable
+
+- name: Add "Poem" Function
+  blockinfile:
+    state: present
+    insertafter: EOF
+    dest: "{{ ansible_env.HOME }}/.profile"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"Poem\" Function"
+    content: |
+      # Activate Poetry virtual environment.
+      function poem() {
+          if [[ -n "$@" ]]; then
+              poetry env use "$@"
+          else
+              poetry env use 3
+          fi;
+
+          if [ -f "pyproject.toml" ]; then
+              source $(poetry env info -p)/bin/activate
+          else
+              echo "The current directory has no associated \"poetry\" capability!"
+          fi;
+      }
+
+- name: Download Poetry
+  get_url:
+    url: https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+    dest: /tmp/get-poetry.py
+  when: not poetry_executable.stat.exists
+
+- name: Install Poetry
+  script: /tmp/get-poetry.py --preview
+  args:
+    executable: python3
+  when: not poetry_executable.stat.exists

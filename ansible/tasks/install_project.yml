@@ -1,0 +1,49 @@
+- name: Add "{{ project }}" Alias
+  blockinfile:
+    state: present
+    insertafter: EOF
+    dest: "{{ ansible_env.HOME }}/.profile"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"{{ project }}\" Alias"
+    content: |
+      alias {{ project }}="cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }} && poem"
+
+- import_tasks: "clone_repository.yml"
+  vars:
+    repository: "{{ project }}"
+
+- name: Check if "{{ project }}" is Installed
+  stat:
+    path: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}/poetry.lock"
+  register: project_poetry_lock_file
+
+- name: Install Repository Dependencies
+  shell: |
+    poetry env use {{ COLOUR_SCIENCE__PYTHON_VERSION }}
+    poetry install --extras "{{ extras }}"
+    source $(poetry env info -p)/bin/activate
+    $(poetry env info -p)/bin/pip list | grep -c imageio && $(poetry env info -p)/bin/python -c "import imageio;imageio.plugins.freeimage.download()" || exit 0
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
+  when: not project_poetry_lock_file.stat.exists
+
+- name: Install "pre-commit" Hooks for "{{ project }}"
+  shell: |
+    source $(poetry env info -p)/bin/activate
+    $(poetry env info -p)/bin/pre-commit install --install-hooks
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
+
+- name: Check if "OpenImageIO" Library is Installed for "{{ project }}"
+  shell: |
+    [ -f "$(poetry env info -p)/lib/python3.6/site-packages/OpenImageIO.so" ] && echo True || echo False
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
+  register: project_openimageio_library_exists
+
+- name: Install "OpenImageIO" Library
+  shell: |
+    source $(poetry env info -p)/bin/activate
+    $(poetry env info -p)/bin/pip list | grep -c imageio && cp /tmp/OpenImageIO-Release-2.0.10/linux64/lib/python3.6/site-packages/OpenImageIO.so $(poetry env info -p)/lib/python3.6/site-packages/ || exit 0
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
+  when: project_openimageio_library_exists == "False"

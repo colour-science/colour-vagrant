@@ -1,0 +1,114 @@
+---
+- hosts: all
+  vars:
+    COLOUR_SCIENCE__ROOT_DIRECTORY: "/colour-science"
+    COLOUR_SCIENCE__PYTHON_VERSION: "3.6"
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.poetry/bin:{{ ansible_env.PATH }}"
+  tasks:
+    - import_tasks: "tasks/install_apt_dependencies.yml"
+    - import_tasks: "tasks/install_poetry.yml"
+    - import_tasks: "tasks/install_openimageio.yml"
+
+    # Project: Awesome Colour
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: awesome-colour
+        extras: development
+
+    # Project: Colour
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour
+        extras: optional plotting
+
+    # Project: Colour - Checker Detection
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-checker-detection
+        extras: development
+
+    # Project: Colour - Analysis - Three.js
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-analysis-three.js
+        extras: development
+
+    # Project: Colour - Datasets
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-datasets
+        extras: development
+
+    # Project: Colour - Demosaicing
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-demosaicing
+        extras: plotting
+
+    # Project: Colour - Dash
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-dash
+        extras: development
+
+    # Project: Colour - HDRI
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-hdri
+        extras: optional plotting
+
+    # Project: colour-science.org
+    - import_tasks: "tasks/install_project.yml"
+      vars:
+        project: colour-science.org
+        extras: development
+
+    # Repository: Colour - Branding
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-branding
+
+    # Repository: Colour - Analysis
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-analysis
+
+    # Repository: Colour - Notebooks
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-notebooks
+
+    - name: Add "Colour - Notebooks" Alias
+      blockinfile:
+        state: present
+        insertafter: EOF
+        dest: "{{ ansible_env.HOME }}/.profile"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"Colour - Notebooks\" Alias"
+        content: |
+          alias colour-notebooks="cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/colour && poem && cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/colour-notebooks && jupyter notebook --ip=0.0.0.0"
+
+    # Repository: Colour - Nuke
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-nuke
+
+    # Repository: Colour - Ocean
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-ocean
+
+    # Repository: Colour - Playground
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-playground
+
+    # Repository: Colour - Spectroscope
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-spectroscope
+
+    # Repository: Colour - Webhook
+    - import_tasks: "tasks/clone_repository.yml"
+      vars:
+        repository: colour-webhook
