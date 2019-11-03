@@ -26,6 +26,13 @@
     chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
   when: not project_poetry_lock_file.stat.exists
 
+- name: Install "pre-commit" Hooks for "{{ project }}"
+  shell: |
+    source $(poetry env info -p)/bin/activate
+    $(poetry env info -p)/bin/pre-commit install --install-hooks
+  args:
+    chdir: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }}"
+
 - name: Check if "OpenImageIO" Library is Installed for "{{ project }}"
   shell: |
     [ -f "$(poetry env info -p)/lib/python3.6/site-packages/OpenImageIO.so" ] && echo True || echo False

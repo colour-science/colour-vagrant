@@ -10,96 +10,96 @@
     - import_tasks: "tasks/install_poetry.yml"
     - import_tasks: "tasks/install_openimageio.yml"
 
-    # Awesome Colour
+    # Project: Awesome Colour
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: awesome-colour
         extras: development
 
-    # Colour
+    # Project: Colour
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour
         extras: optional plotting
 
-    # Colour - Checker Detection
+    # Project: Colour - Checker Detection
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-checker-detection
         extras: development
 
-    # Colour - Analysis - Three.js
+    # Project: Colour - Analysis - Three.js
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-analysis-three.js
         extras: development
 
-    # Colour - Datasets
+    # Project: Colour - Datasets
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-datasets
         extras: development
 
-    # Colour - Datasets
+    # Project: Colour - Demosaicing
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-demosaicing
         extras: plotting
 
-    # Colour - Dash
+    # Project: Colour - Dash
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-dash
         extras: development
 
-    # Colour - HDRI
+    # Project: Colour - HDRI
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-hdri
         extras: optional plotting
 
-    # colour-science.org
+    # Project: colour-science.org
     - import_tasks: "tasks/install_project.yml"
       vars:
         project: colour-science.org
         extras: development
 
-    # Colour - Branding
+    # Repository: Colour - Branding
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-branding
 
-    # Colour - Analysis
+    # Repository: Colour - Analysis
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-analysis
 
-    # Colour - Notebooks
+    # Repository: Colour - Notebooks
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-notebooks
 
-    # Colour - Nuke
+    # Repository: Colour - Nuke
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-nuke
 
-    # Colour - Ocean
+    # Repository: Colour - Ocean
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-ocean
 
-    # Colour - Playground
+    # Repository: Colour - Playground
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-playground
 
-    # Colour - Spectroscope
+    # Repository: Colour - Spectroscope
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-spectroscope
 
-    # Colour - Webhook
+    # Repository: Colour - Webhook
     - import_tasks: "tasks/clone_repository.yml"
       vars:
         repository: colour-webhook
