@@ -1,0 +1,10 @@
+- name: Check if "{{ repository }}" is Cloned
+  stat:
+    path: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
+  register: repository_local_directory
+
+- name: Clone "{{ repository }}"
+  git:
+    repo: "https://github.com/colour-science/{{ repository }}.git"
+    dest: "{{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ repository }}"
+  when: not repository_local_directory.stat.exists

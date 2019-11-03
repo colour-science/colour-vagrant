@@ -1,3 +1,8 @@
+- name: Check if "Poetry" is Installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.poetry/bin/poetry"
+  register: poetry_executable
+
 - name: Add "Poem" Function
   blockinfile:
     state: present
@@ -19,11 +24,15 @@
               echo "The current directory has no associated \"poetry\" capability!"
           fi;
       }
+
 - name: Download Poetry
   get_url:
     url: https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
     dest: /tmp/get-poetry.py
+  when: not poetry_executable.stat.exists
+
 - name: Install Poetry
   script: /tmp/get-poetry.py --preview
   args:
     executable: python3
+  when: not poetry_executable.stat.exists
