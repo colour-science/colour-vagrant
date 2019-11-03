@@ -1,9 +1,9 @@
-- name: Add "{{ project }}" Alias Function
+- name: Add "{{ project }}" Alias
   blockinfile:
     state: present
     insertafter: EOF
     dest: "{{ ansible_env.HOME }}/.profile"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"{{ project }}\" Alias Function"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"{{ project }}\" Alias"
     content: |
       alias {{ project }}="cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/{{ project }} && poem"
 

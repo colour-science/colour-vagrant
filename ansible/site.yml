@@ -79,6 +79,15 @@
       vars:
         repository: colour-notebooks
 
+    - name: Add "Colour - Notebooks" Alias
+      blockinfile:
+        state: present
+        insertafter: EOF
+        dest: "{{ ansible_env.HOME }}/.profile"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Add \"Colour - Notebooks\" Alias"
+        content: |
+          alias colour-notebooks="cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/colour && poem && cd {{ COLOUR_SCIENCE__ROOT_DIRECTORY }}/colour-notebooks && jupyter notebook --ip=0.0.0.0"
+
     # Repository: Colour - Nuke
     - import_tasks: "tasks/clone_repository.yml"
       vars:
