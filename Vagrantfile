@@ -63,7 +63,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # View the documentation for the provider you're using for more
   # information on available options.
 
-  #
   # Provisioning with "ansible_local".
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "ansible/site.yml"
