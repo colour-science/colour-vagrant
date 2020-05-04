@@ -1,0 +1,3 @@
+[submodule "colour-science-ansible"]
+	path = colour-science-ansible
+	url = https://github.com/colour-science/colour-science-ansible

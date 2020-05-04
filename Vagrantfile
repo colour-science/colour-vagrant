@@ -65,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Provisioning with "ansible_local".
   config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "ansible/site.yml"
+    ansible.playbook = "colour-science-ansible/ansible/site.yml"
     ansible.verbose = "-vvv"
   end
 end
